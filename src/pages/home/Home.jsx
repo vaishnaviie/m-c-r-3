@@ -1,32 +1,86 @@
 import React, { useEffect, useState } from "react";
 import styles from "./Home.module.css";
 import { snacks } from "../../data/Data";
-import SearchInput from "../../components/SearchInput";
-import { useData } from "../../context/Context";
 
 const Home = () => {
-  const { searchedItem, dispatch, data, setData } = useData();
-  console.log(data);
+  const [searchItem, setSearchItem] = useState("");
+  const [sortBy, setSortBy] = useState("");
+  const [toggle, setToggle] = useState(false);
 
-  const sortHandler = () => {
-    [...data].sort((a, b) => (a.product_name > b.product_name ? 1 : -1));
+  const arr = [
+    {
+      label: "ID",
+      value: "id",
+    },
+    {
+      label: "Product Name",
+      value: "product_name",
+    },
+    {
+      label: "Product Weight",
+      value: "product_weight",
+    },
+    {
+      label: "Price",
+      value: "price",
+    },
+    {
+      label: "Calories",
+      value: "calories",
+    },
+    {
+      label: "Ingredients",
+      value: "ingredients",
+    },
+  ];
+
+  const sortHandler = (type) => {
+    if (sortBy === "product_weight") {
+      return [...snacks].sort((a, b) =>
+        toggle
+          ? a?.product_weight - b?.product_weight
+          : b?.product_weight - a?.product_weight
+      );
+    }
+    if (sortBy === type) {
+      return [...snacks].sort((a, b) =>
+        toggle
+          ? a?.[type]?.toString()?.localeCompare(b?.[type]?.toString())
+          : b?.[type]?.toString()?.localeCompare(a?.[type]?.toString())
+      );
+    }
+
+    return snacks;
   };
-  console.log(sortHandler());
+  const sortedData = sortHandler(sortBy);
+  const searchedItems = sortedData?.filter(({ product_name }) =>
+    product_name?.toLowerCase()?.includes(searchItem?.toLowerCase())
+  );
   return (
     <div className={styles.mainContainer}>
-      <SearchInput />
+      <input
+        type="search"
+        placeholder="Enter item name"
+        value={searchItem}
+        onChange={(e) => {
+          setSearchItem(e.target.value);
+        }}
+      />
       <table>
         <tr>
-          <th>ID</th>
-          <th style={{ cursor: "pointer" }} onClick={() => sortHandler()}>
-            Product Name
-          </th>
-          <th>Product Weight</th>
-          <th>Price</th>
-          <th>Calories</th>
-          <th>Ingredients</th>
+          {arr.map((item) => (
+            <th
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                setSortBy(item.value);
+                setToggle(!toggle);
+              }}
+            >
+              {item.label}
+            </th>
+          ))}
         </tr>
-        {data?.map((e) => (
+        {searchedItems?.map((e) => (
           <tr>
             <td>{e.id}</td>
             <td>{e.product_name}</td>

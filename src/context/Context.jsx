@@ -10,20 +10,20 @@ const Context = ({ children }) => {
   const [data, setData] = useState(snacks);
   const [state, dispatch] = useReducer(ReducerFunc, initialState);
 
-  const searchedItem =
+  const searchedItems =
     state?.searchItem?.length > 0
-      ? snacks?.filter(({ product_name }) =>
+      ? data?.filter(({ product_name }) =>
           product_name
             ?.toLowerCase()
             ?.includes(state?.searchItem?.toLowerCase())
         )
       : "";
-  //   setData(searchedItem);
-  console.log(searchedItem);
+  // setData(searchedItems);
+  // console.log(searchedItems);
   return (
     <div>
       <ContextProvider.Provider
-        value={{ state, dispatch, searchedItem, data, setData }}
+        value={{ state, dispatch, searchedItems, data, setData }}
       >
         {children}
       </ContextProvider.Provider>
